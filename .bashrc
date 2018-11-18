@@ -91,13 +91,10 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 alias sb='source ~/.bashrc'
-<<<<<<< HEAD
 alias bsh='vim ~/.bashrc'
 alias rsetup='source /opt/ros/kinetic/setup.bash && source ~/catkin_ws/devel/setup.bash && export PATH="" && export PATH="/opt/ros/kinetic/bin:/home/aisl/bin:/home/aisl/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"'
 alias msetup='export ROS_IP=192.168.0.101 && export ROS_MASTER_URI=http://192.168.0.30:11311'
 alias lsetup='export ROS_IP=192.168.0.101 && export ROS_MASTER_URI=http://localhost:11311'
-=======
->>>>>>> 802bc8a6f82f7e2ddeed8bc368a5fa8071dcf7a9
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -130,7 +127,6 @@ ulimit -c unlimited
 PS1="$PS1"'$([ -n "$TMUX" ] && tmux setenv TMUXPWD_$(tmux display -p "#D" | tr -d %) "$PWD")'
 source ~/.tmuxinator/tmuxinator.bash
 #source ~/.tmuxautorun
-<<<<<<< HEAD
 
 export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/aisl/catkin_ws/src/ORB_SLAM2/Examples/ROS
 
@@ -170,5 +166,3 @@ export DOCKER_DISP="$DOCKER_USER --env=DISPLAY=$DISPLAY --volume=/tmp/.X11-unix:
 #export PATH="/home/aisl/anaconda3/bin:$PATH"
 
 export GIT_SSL_NO_VERIFY=1
-=======
->>>>>>> 802bc8a6f82f7e2ddeed8bc368a5fa8071dcf7a9
