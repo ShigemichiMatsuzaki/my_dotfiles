@@ -1,0 +1,23 @@
+# ~/.tmuxinator/ros.yml
+
+# Enable vim color scheme on tmuxinator
+#http://unskilled.site/tmux%E3%81%A7tmuxinator%E3%82%92%E4%BD%BF%E3%81%86%E6%99%82%E3%81%AE256%E8%89%B2%E5%95%8F%E9%A1%8C/
+tmux_options: -2 -f ~/.tmux.conf
+
+name: ros
+root: ~/catkin_ws/src
+pre:
+    #- cd ~/dotfiles
+    #- git pull
+
+
+windows:
+    - Launch:
+        layout: tiled
+        panes:
+            - sl
+            - sl
+            - sl
+            - sl
+            - sl
+            - sl

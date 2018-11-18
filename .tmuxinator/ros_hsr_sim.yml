@@ -1,0 +1,33 @@
+# ~/.tmuxinator/ros_hsr_sim.yml
+
+# Enable vim color scheme on tmuxinator
+#http://unskilled.site/tmux%E3%81%A7tmuxinator%E3%82%92%E4%BD%BF%E3%81%86%E6%99%82%E3%81%AE256%E8%89%B2%E5%95%8F%E9%A1%8C/
+tmux_options: -2 -f ~/.tmux.conf
+
+name: ros_hsr_sim
+root: ~/catkin_ws/
+pre:
+    #- cd ~/dotfiles
+    #- git pull
+
+
+windows:
+    - Console:
+        layout: tiled
+        panes:
+            - sim_mode && roslaunch hsrb_gazebo_launch hsrb_megaweb2015_world.launch
+            - sim_mode
+            - sim_mode
+            - sim_mode
+            - sim_mode
+            - sim_mode
+    - Coding:
+        layout: main-horizontal
+        panes:
+            - vim:
+                - vim
+            - tig:
+                - cd ~/catkin_ws/src
+                - ls -ltr --ignore='cmakelist*'
+
+

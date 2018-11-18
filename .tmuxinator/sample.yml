@@ -1,0 +1,23 @@
+# ~/.tmuxinator/sample.yml
+ 
+name: sample
+root: ~/
+ 
+windows:
+  - window1:
+      layout: be07,111x36,0,0[111x17,0,0{55x17,0,0,26,55x17,56,0[55x8,56,0,29,55x8,56,9,30]},111x18,0,18{55x18,0,18[55x9,0,18,28,55x8,0,28,32],27x18,56,18,31,27x18,84,18,33}]
+      panes:
+        - pane0:
+          - vim
+        - pane1:
+          - vim
+        - pane2:
+          - vim
+        - pane3:
+          - vim
+        - pane4:
+          - vim
+        - pane5:
+          - vim
+        - pane6:
+          - vim

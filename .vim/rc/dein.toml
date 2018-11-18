@@ -1,0 +1,156 @@
+# 基本は github.com のレポジトリーを指定するだけ
+[[plugins]]
+repo = 'Shougo/dein.vim'
+
+# git clone 後、実行すべきコマンドがある場合はこんな感じ
+[[plugins]]
+repo = 'Shougo/vimproc.vim'
+hook_poset_update = '''
+  if dein#util#_is_windows()
+    let cmd = 'tools\\update-dll-mingw'
+  elseif dein#util#_is_cygwin()
+    let cmd = 'make -f make_cygwin.mak'
+  elseif executable('gmake')
+    let cmd = 'gmake'
+  else
+    let cmd = 'make'
+  endif
+  let g:dein#plugin.build = cmd
+'''
+
+[[plugins]]
+repo = 'Shougo/denite.nvim'
+
+[[plugins]]
+repo = 'tomtom/tcomment_vim'
+
+# 依存関係を指定したいとき
+[[plugins]]
+repo    = 'vim-airline/vim-airline'
+depends = ['vim-airline-themes']
+
+# 依存関係を指定したからと言って、自動でインストールはされない（ここは NeoBundle と違う）
+[[plugins]]
+repo = 'vim-airline/vim-airline-themes'
+
+[[plugins]]
+repo = 'scrooloose/nerdtree'
+hook_add = '''
+  autocmd VimEnter * execute 'NERDTree'
+  let NERDTreeIgnore = ['.[oa]$', '.cm[aiox]$', '.cmxa$', '.(aux|bbl|blg|dvi|log)$', '.(tgz|gz|zip)$', 'Icon' ]
+  let g:NERDTreeChDirMode = 2
+  
+  nnoremap <silent><C-e> :NERDTreeToggle<CR>
+'''
+
+[[plugins]]
+repo = 'itchyny/lightline.vim'
+
+[[plugins]]
+repo = 'tpope/vim-fugitive'
+
+[[plugins]]
+repo = 'airblade/vim-gitgutter'
+
+[[plugins]]
+repo = 'nathanaelkane/vim-indent-guides'
+hook_add = '''
+  let g:indent_guides_enable_on_vim_startup = 1
+'''
+[[plugins]]
+repo = 'KohPoll/vim-less'
+
+[[plugins]]
+repo = 'Shougo/deoplete.nvim'
+on_event = 'InsertCharPre'
+
+hook_source = '''
+  let g:deoplete#enable_at_startup = 1
+  let g:deoplete#auto_complete_delay = 0
+  let g:deoplete#auto_complete_start_length = 1
+  let g:deoplete#enable_camel_case = 0
+  let g:deoplete#enable_ignore_case = 0
+  let g:deoplete#enable_refresh_always = 0
+  let g:deoplete#enable_smart_case = 1
+  let g:deoplete#file#enable_buffer_path = 1
+  let g:deoplete#max_list = 10000
+  inoremap <expr><tab> pumvisible() ? "\<C-n>" :
+    \ neosnippet#expandable_or_jumpable() ?
+    \    "\<Plug>(neosnippet_expand_or_jump)" : "\<tab>"
+'''
+on_i = 1
+
+[[plugins]]
+repo = 'roxma/nvim-yarp'
+if   = '''! has('nvim')'''
+
+[[plugins]]
+repo = 'roxma/vim-hug-neovim-rpc'
+if   = '''! has('nvim')'''
+
+# [[plugins]]
+# repo = 'taketwo/vim-ros'
+
+#
+# Color schemes
+#
+
+# solarized カラースキーム
+[[plugins]]
+repo = 'altercation/vim-colors-solarized'
+
+# mustang カラースキーム
+[[plugins]]
+repo = 'croaker/mustang-vim'
+
+# wombat カラースキーム
+[[plugins]]
+repo = 'jeffreyiacono/vim-colors-wombat'
+
+# jellybeans カラースキーム
+[[plugins]]
+repo = 'nanotech/jellybeans.vim'
+
+# lucius カラースキーム
+[[plugins]]
+repo = 'vim-scripts/Lucius'
+
+# zenburn カラースキーム
+[[plugins]]
+repo = 'vim-scripts/Zenburn'
+
+# mrkn256 カラースキーム
+[[plugins]]
+repo = 'mrkn/mrkn256.vim'
+
+# railscasts カラースキーム
+[[plugins]]
+repo = 'jpo/vim-railscasts-theme'
+
+# pyte カラースキーム
+[[plugins]]
+repo = 'therubymug/vim-pyte'
+
+# molokai カラースキーム
+[[plugins]]
+repo = 'tomasr/molokai'
+
+# カラースキーム一覧表示に Unite.vim を使う
+[[plugins]]
+repo = 'ujihisa/unite-colorscheme'
+
+[[plugins]]
+repo = 'christoomey/vim-tmux-navigator'
+
+
+# ブランチやタグを指定したいとき
+# [[plugins]]
+# repo = 'delphinus35/typescript-vim'
+# rev  = 'colorize-template-strings'
+#
+# # 特定の条件で読み込みたいとき
+# [[plugins]]
+# repo = 'elzr/vim-json'
+# if   = '''! has('kaoriya')'''
+#
+

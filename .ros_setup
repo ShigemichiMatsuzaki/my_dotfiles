@@ -1,0 +1,50 @@
+# HSR setting
+#network_if=eth1 #Lab-Hydro
+network_if=wlan0  #Home-Hydro & Anny
+
+#if [ -e /opt/tmc/ros/indigo/setup.bash ] ; then
+if [ -e /opt/tmc/ros/kinetic/setup.bash ] ; then
+  export TARGET_IP=$(LANG=C /sbin/ifconfig $network_if | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
+  if [ -z "$TARGET_IP" ] ; then
+    echo "ROS_IP is not set."
+  else
+    export ROS_IP=$TARGET_IP
+  fi
+  export ROS_HOME=~/.ros
+  alias sim_mode='export ROS_MASTER_URI=http://localhost:11311 export PS1="\[\033[44;1;37m\]<local>\[\033[0m\]\w$ "'
+  alias hsrb_mode='export ROS_MASTER_URI=http://hsrb.local:11311 export PS1="\[\033[41;1;37m\]<hsrb>\[\033[0m\]\w$ "'
+  source /opt/tmc/ros/kinetic/setup.bash
+fi
+
+#export ROS_HOSTNAME=localhost
+#export ROS_MASTER_URI=http://${ROS_HOSTNAME}:11311
+export ROS_MASTER_URI=http://localhost:11311
+
+# Aliases
+alias rsetup='source /opt/ros/kinetic/setup.bash && source ~/catkin_ws/devel/setup.bash'
+alias msetup='export ROS_MASTER_URI=http://192.168.0.30:11311 && export ROS_IP=192.168.0.101'
+
+# Set ROS packages
+source /opt/ros/kinetic/setup.bash --extend
+source ~/catkin_ws/devel/setup.bash --extend
+
+
+
+# ROS alias command
+alias cw='cd ~/catkin_ws'
+alias cs='cd ~/catkin_ws/src'
+alias cm='cd ~/catkin_ws && catkin_make'
+alias cmp='cd ~/catkin_ws && catkin_make --pkg'
+alias catkin_eclipse='cd ~/catkin_ws && catkin_make --force-cmake -G"Eclipse CDT4 - Unix Makefiles" && awk -f $(rospack find mk)/eclipse.awk build/.project > build/.project_with_env && mv build/.project_with_env build/.project'
+
+
+
+# HSR alias command
+alias ssh_hsr='ssh administrator@hsrb.local'
+alias rviz_hsr_full='rosrun rviz rviz  -d `rospack find hsrb_common_launch`/config/hsrb_display_full.rviz'
+alias rviz_hsr_simple='rosrun rviz rviz  -d `rospack find hsrb_common_launch`/config/hsrb_display_simple.rviz'
+
+
+
+## Qt creator (ros_qtc_plugin)
+#source /opt/qt57/bin/qt57-env.sh

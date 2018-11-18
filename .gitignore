@@ -1,0 +1,20 @@
+# Retain bundle folder for vim plugins
+*
+
+# Files
+!.gitignore
+!.bashrc
+!.latexmkrc
+!.tmux.conf
+!.ros_setup
+!.tmux-powerlinerc
+!.tmuxautorun
+!.ycm_extra_conf.py
+!dotFilesLink.sh
+
+# Folders
+!.vim/rc/*.toml
+!.tmuxinator/
+
+!.tmuxinator/*.yml
+#!.vim/*.yml
