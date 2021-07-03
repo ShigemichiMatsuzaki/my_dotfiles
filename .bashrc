@@ -27,8 +27,6 @@ shopt -s checkwinsize
 # match all files and zero or more directories and subdirectories.
 #shopt -s globstar
 
-export PYTHONPATH=~/caffe-segnet/python:$PYTHONPATH
-
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
@@ -39,13 +37,13 @@ fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color) color_prompt=yes;;
+    xterm-color|*-256color) color_prompt=yes;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
 # off by default to not distract the user: the focus in a terminal window
 # should be on the output of commands, not on the prompt
-#force_color_prompt=yes
+force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
@@ -86,15 +84,13 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
 fi
 
+# colored GCC warnings and errors
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
 # some more ls aliases
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
-alias sb='source ~/.bashrc'
-alias bsh='vim ~/.bashrc'
-alias rsetup='source /opt/ros/kinetic/setup.bash && source ~/catkin_ws/devel/setup.bash && export PATH="" && export PATH="/opt/ros/kinetic/bin:/home/aisl/bin:/home/aisl/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"'
-alias msetup='export ROS_IP=192.168.0.101 && export ROS_MASTER_URI=http://192.168.0.30:11311'
-alias lsetup='export ROS_IP=192.168.0.101 && export ROS_MASTER_URI=http://localhost:11311'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -109,7 +105,6 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
@@ -121,48 +116,98 @@ if ! shopt -oq posix; then
   fi
 fi
 
-source ~/.ros_setup
-ulimit -c unlimited
+# Set default Docker runtime to use in '~/HSR/docker/docker-compose.yml':
+# 'runc' (Docker default) or 'nvidia' (Nvidia Docker 2).
+export DOCKER_RUNTIME=nvidia
+export PATH=$PATH:/usr/local/texlive/2020/bin/x86_64-linux
 
-PS1="$PS1"'$([ -n "$TMUX" ] && tmux setenv TMUXPWD_$(tmux display -p "#D" | tr -d %) "$PWD")'
-source ~/.tmuxinator/tmuxinator.bash
-#source ~/.tmuxautorun
+# ROS
+source /opt/ros/noetic/setup.bash
 
-export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/aisl/catkin_ws/src/ORB_SLAM2/Examples/ROS
+alias rsetup='source /opt/ros/noetic/setup.bash && source ~/catkin_ws/devel/setup.bash'
 
-#
-# HSR related setups
-#
-#network_if=enp5s0
-network_if=wlp4s0
+function docker_ros_setup() {
+  if [ "$1" != "" ]; then
+    CONTAINER_NAME=$1
+  else
+    CONTAINER_NAME="master"
+  fi
 
-if [ -e /opt/ros/kinetic/setup.bash ] ; then
-    source /opt/ros/kinetic/setup.bash
-else
-    echo "ROS packages are not installed."
-fi
+  IP_ADDRESS=`docker inspect $CONTAINER_NAME | grep -E "IPAddress" | grep -o "[0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+"`
 
-source ~/motion_samples_ws/devel/setup.bash
+  if [ "$IP_ADDRESS" != "" ]; then
+    export ROS_MASTER_URI=http://$IP_ADDRESS:11311
+    export ROS_IP=${IP_ADDRESS%.*}.1
 
-export TARGET_IP=$(LANG=C /sbin/ifconfig $network_if | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
-if [ -z "$TARGET_IP" ] ; then
-    echo "ROS_IP is not set."
-else
-    export ROS_IP=$TARGET_IP
-fi
-export ROS_HOME=~/.ros
-alias sim_mode='export ROS_MASTER_URI=http://localhost:11311 export PS1="\[\033[44;1;37m\]<local>\[\033[0m\]\w$ "'
-alias hsrb_mode='export ROS_MASTER_URI=http://hsrb.local:11311 export PS1="\[\033[41;1;37m\]<hsrb>\[\033[0m\]\w$ "'
+    echo "Docker ROS setup : $IP_ADDRESS"
+    echo "ROS IP           : $ROS_IP"
+  else
+    echo CONTAINER \"$CONTAINER_NAME\" not found
+  fi
+}
 
-alias hsrviz="rosrun rviz rviz -d `rospack find hsrb_common_launch`/config/hsrb_display_full_hsrb.rviz"
-alias hsr_sim="roslaunch hsrb_gazebo_launch hsrb_megaweb2015_world.launch"
+function docker_ip_setup() {
+  FILE="/etc/hosts"
+  if [ "$1" != "" ]; then
+      IP_ADDRESS=`docker inspect $1 | grep -E "IPAddress" | grep -o "[0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+"`
+      IF_EXISTS=`cat $FILE | grep $1`
+    
+      # If the specified container exists
+      if [ "$IP_ADDRESS" != "" ]; then
+        # If the entry for the container exists
+        if [ "$IF_EXISTS" != "" ]; then
+          bash -c "echo $IP_ADDRESS $1 && sudo sed -i 's/.*$1.*/$IP_ADDRESS $1/g' $FILE"
+        else
+          bash -c "echo $IP_ADDRESS $1 | sudo tee -a $FILE"
+        fi
+      fi
+  else
+    # If no args, set IP for all the containers
+    list=`docker ps --format "{{.Names}}"`
+    for container_name in $list; do
+      IP_ADDRESS=`docker inspect $container_name | grep -m1 -E "IPAddress" | grep -o "[0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+"`
+      IF_EXISTS=`cat $FILE | grep $container_name`
+      # If the specified container exists
+      if [ "$IP_ADDRESS" != "" ]; then
+        # If the entry for the container exists
+        if [ "$IF_EXISTS" != "" ]; then
+          bash -c "echo $IP_ADDRESS $container_name && sudo sed -i 's/.*$container_name.*/$IP_ADDRESS $container_name/g' $FILE"
+        else
+          bash -c "echo $IP_ADDRESS $container_name | sudo tee -a $FILE"
+        fi
+      fi
+    done
+  fi
+}
 
-export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+function _docker_ip_setup_comp() {
+    local cur prev cword
+    _get_comp_words_by_ref -n : cur prev cword
+    opts=`docker ps --format "{{.Names}}"`
+#    for name in $list; do
+#      if [ "$name" != "NAMES" ]; then
+#        opts="${opts} $name" 
+#      fi
+#    done
 
-export DOCKER_USER="--user=$(id -u):$(id -g) $(for i in $(id -G); do echo -n " --group-add "$i; done) --workdir=/home/$USER --volume=/home/$USER:/home/$USER --volume=/etc/group:/etc/group:ro --volume=/etc/passwd:/etc/passwd:ro --volume=/etc/shadow:/etc/shadow:ro --volume=/etc/sudoers.d:/etc/sudoers.d:ro"
-export DOCKER_DISP="$DOCKER_USER --env=DISPLAY=$DISPLAY --volume=/tmp/.X11-unix:/tmp/.X11-unix:rw -e QT_X11_NO_MITSHM=1"
 
-# added by Anaconda3 installer
-#export PATH="/home/aisl/anaconda3/bin:$PATH"
+    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+}
 
-export GIT_SSL_NO_VERIFY=1
+complete -F _docker_ip_setup_comp docker_ip_setup
+
+alias ssh="ssh -Y $1"
+
+function pdfmin()
+{
+  local cnt=0
+  for i in $@; do
+    gs -sDEVICE=pdfwrite \
+      -dCompatibilityLevel=1.5 \
+      -dPDFSETTINGS=/prepress \
+      -dNOPAUSE -dQUIET -dBATCH \
+      -sOutputFile=${i%%.*}.min.pdf ${i} &
+    (( (cnt += 1) % 4 == 0 )) && wait
+  done
+  wait && return 0
+}
