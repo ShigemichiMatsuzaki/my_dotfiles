@@ -122,10 +122,13 @@ export DOCKER_RUNTIME=nvidia
 export PATH=$PATH:/usr/local/texlive/2020/bin/x86_64-linux
 
 # ROS
-source /opt/ros/noetic/setup.bash
+source /opt/ros/${ROS_DISTRO}/setup.bash
 
-alias rsetup='source /opt/ros/noetic/setup.bash && source ~/catkin_ws/devel/setup.bash'
+alias rsetup='source /opt/ros/${ROS_DISTRO}/setup.bash && source ~/catkin_ws/devel/setup.bash'
 
+#
+# Set $ROS_MASTER_URI and $ROS_IP of the host to match with the ROS master running in a docker container
+#
 function docker_ros_setup() {
   if [ "$1" != "" ]; then
     CONTAINER_NAME=$1
@@ -133,7 +136,7 @@ function docker_ros_setup() {
     CONTAINER_NAME="master"
   fi
 
-  IP_ADDRESS=`docker inspect $CONTAINER_NAME | grep -E "IPAddress" | grep -o "[0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+"`
+  IP_ADDRESS=`docker inspect $CONTAINER_NAME | grep -E "IPAddress" | grep -o -m1 "[0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+"`
 
   if [ "$IP_ADDRESS" != "" ]; then
     export ROS_MASTER_URI=http://$IP_ADDRESS:11311
@@ -146,10 +149,25 @@ function docker_ros_setup() {
   fi
 }
 
+# Tab completion for 'docker_ros_setup'
+function _docker_ros_setup_comp() {
+    local cur prev cword
+    _get_comp_words_by_ref -n : cur prev cword
+    opts=`docker ps --format "{{.Names}}" | grep -E "master"`
+
+    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+}
+
+# Configure tab completion for 'docker_ros_setup'
+complete -F _docker_ros_setup_comp docker_ros_setup
+
+#
+# Register container names and their IP addresses in /etc/hosts
+#
 function docker_ip_setup() {
   FILE="/etc/hosts"
   if [ "$1" != "" ]; then
-      IP_ADDRESS=`docker inspect $1 | grep -E "IPAddress" | grep -o "[0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+"`
+      IP_ADDRESS=`docker inspect $1 | grep -E "IPAddress" | grep -o -m1 "[0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+"`
       IF_EXISTS=`cat $FILE | grep $1`
     
       # If the specified container exists
@@ -165,7 +183,7 @@ function docker_ip_setup() {
     # If no args, set IP for all the containers
     list=`docker ps --format "{{.Names}}"`
     for container_name in $list; do
-      IP_ADDRESS=`docker inspect $container_name | grep -m1 -E "IPAddress" | grep -o "[0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+"`
+      IP_ADDRESS=`docker inspect $container_name | grep -E "IPAddress" | grep -o -m1 "[0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+"`
       IF_EXISTS=`cat $FILE | grep $container_name`
       # If the specified container exists
       if [ "$IP_ADDRESS" != "" ]; then
@@ -180,20 +198,16 @@ function docker_ip_setup() {
   fi
 }
 
+# Tab completion for 'docker_ip_setup'
 function _docker_ip_setup_comp() {
     local cur prev cword
     _get_comp_words_by_ref -n : cur prev cword
     opts=`docker ps --format "{{.Names}}"`
-#    for name in $list; do
-#      if [ "$name" != "NAMES" ]; then
-#        opts="${opts} $name" 
-#      fi
-#    done
-
 
     COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
 }
 
+# Configure tab completion for 'docker_ip_setup'
 complete -F _docker_ip_setup_comp docker_ip_setup
 
 alias ssh="ssh -Y $1"
