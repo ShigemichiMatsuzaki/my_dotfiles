@@ -122,9 +122,10 @@ export DOCKER_RUNTIME=nvidia
 export PATH=$PATH:/usr/local/texlive/2020/bin/x86_64-linux
 
 # ROS
-source /opt/ros/${ROS_DISTRO}/setup.bash
+source /opt/ros/noetic/setup.bash
 
-alias rsetup='source /opt/ros/${ROS_DISTRO}/setup.bash && source ~/catkin_ws/devel/setup.bash'
+alias rsetup='export ROS_IP=133.15.23.154 && source /opt/ros/${ROS_DISTRO}/setup.bash && \
+  source ~/catkin_ws/devel/setup.bash'
 
 #
 # Set $ROS_MASTER_URI and $ROS_IP of the host to match with the ROS master running in a docker container
@@ -225,3 +226,15 @@ function pdfmin()
   done
   wait && return 0
 }
+
+alias nvitop="nvitop -m auto"
+export UE4_ROOT=~/UnrealEngine_4.26
+export PATH=/opt/TurboVNC/bin:$PATH
+export PYTHONPATH=$PYTHONPATH:~/carla/PythonAPI/carla/dist/carla-0.9.13-py3.7-linux-x86_64.egg:~/carla/PythonAPI/carla
+export CARLA_ROOT=~/carla/
+alias carla_nw="cd $CARLA_ROOT && ./CarlaUE4.sh sh -RenderOffScreen"
+
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
