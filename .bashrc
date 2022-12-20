@@ -89,7 +89,7 @@ fi
 
 # some more ls aliases
 alias ll='ls -alF'
-alias la='ls -A'
+alias la='ls -al'
 alias l='ls -CF'
 
 # Add an "alert" alias for long running commands.  Use like so:
@@ -122,7 +122,7 @@ export DOCKER_RUNTIME=nvidia
 export PATH=$PATH:/usr/local/texlive/2020/bin/x86_64-linux
 
 # ROS
-source /opt/ros/${ROS_DISTRO}/setup.bash
+source /opt/ros/*/setup.bash
 
 alias rsetup='source /opt/ros/${ROS_DISTRO}/setup.bash && source ~/catkin_ws/devel/setup.bash'
 
@@ -225,3 +225,7 @@ function pdfmin()
   done
   wait && return 0
 }
+export CXX=/usr/bin/clang++
+export C=/usr/bin/clang
+
+alias nvitop="docker run -it --rm --runtime=nvidia --gpus=all --pid=host nvitop:latest"

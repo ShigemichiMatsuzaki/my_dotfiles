@@ -155,4 +155,3 @@ hook_add = '''
 # repo = 'elzr/vim-json'
 # if   = '''! has('kaoriya')'''
 #
-
