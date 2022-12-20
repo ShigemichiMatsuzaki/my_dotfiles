@@ -89,7 +89,7 @@ fi
 
 # some more ls aliases
 alias ll='ls -alF'
-alias la='ls -A'
+alias la='ls -al'
 alias l='ls -CF'
 
 # Add an "alert" alias for long running commands.  Use like so:
@@ -122,7 +122,8 @@ export DOCKER_RUNTIME=nvidia
 export PATH=$PATH:/usr/local/texlive/2020/bin/x86_64-linux
 
 # ROS
-source /opt/ros/noetic/setup.bash
+#source /opt/ros/noetic/setup.bash
+source /opt/ros/*/setup.bash
 
 alias rsetup='export ROS_IP=133.15.23.154 && source /opt/ros/${ROS_DISTRO}/setup.bash && \
   source ~/catkin_ws/devel/setup.bash'
@@ -238,3 +239,8 @@ alias carla_nw="cd $CARLA_ROOT && ./CarlaUE4.sh sh -RenderOffScreen"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+export CXX=/usr/bin/clang++
+export C=/usr/bin/clang
+
+alias nvitop="docker run -it --rm --runtime=nvidia --gpus=all --pid=host nvitop:latest"
