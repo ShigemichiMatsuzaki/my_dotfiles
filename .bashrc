@@ -228,18 +228,6 @@ function pdfmin()
   wait && return 0
 }
 
-alias nvitop="nvitop -m auto"
-export UE4_ROOT=~/UnrealEngine_4.26
-export PATH=/opt/TurboVNC/bin:$PATH
-export PYTHONPATH=$PYTHONPATH:~/carla/PythonAPI/carla/dist/carla-0.9.13-py3.7-linux-x86_64.egg:~/carla/PythonAPI/carla
-export CARLA_ROOT=~/carla/
-alias carla_nw="cd $CARLA_ROOT && ./CarlaUE4.sh sh -RenderOffScreen"
-
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
 export CXX=/usr/bin/clang++
 export C=/usr/bin/clang
 
