@@ -94,3 +94,14 @@ gconftool-2 --set --type string /apps/gnome-terminal/profiles/Default/font "Rict
 ## Create a symbolic link file
 #sudo ln -s /opt/qt57/bin/qtcreator-wrapper /usr/local/bin/qtcreator
 
+# Node.js
+# https://gist.github.com/budiantoip/fb4d04c80f4cf05f33deace08984e8eb
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+source ~/.bashrc
+nvm install --lts
+
+# Latest version of Vim
+sudo apt purge vim
+sudo add-apt-repository ppa:jonathonf/vim
+sudo apt update 
+sudo apt install vim
