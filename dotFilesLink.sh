@@ -6,7 +6,7 @@
 ############################
 ln -snf ~/my_dotfiles/.bashrc ~/.bashrc
 
-ln -snf ~/my_dotfiles/.vimrc ~/.vimrc
+ln -snf ~/my_dotfiles/.vim/rc/.vimrc ~/.vimrc
 ln -snf ~/my_dotfiles/.vim ~/.vim
 
 ln -snf ~/my_dotfiles/.tmux.conf ~/.tmux.conf
@@ -34,14 +34,12 @@ ln -snf ~/my_dotfiles/.latexmkrc ~/.latexmkrc
 sudo apt-get install aptitude
 sudo aptitude install tmux # NOTE: tmux should be version 1.8. Please check whether you have the right version. If not, downgrade it via apt.
 
-sudo apt install gem ruby-dev build-essential
+sudo apt install gem ruby-dev build-essential gconf2
 sudo gem install rubygems-update
 sudo update_rubygems
 sudo gem install tmuxinator
 
 git clone git@github.com:erikw/tmux-powerline.git ~/tmux-powerline
- 
- 
  
 # #########################################################################
 # ##### Install Ricty font (http://www.rs.tus.ac.jp/yyusa/ricty.html) #####
@@ -72,7 +70,6 @@ fc-list | grep Ri
 gconftool-2 --get /apps/gnome-terminal/profiles/Default/font # Show current font
 echo "->"
 gconftool-2 --set --type string /apps/gnome-terminal/profiles/Default/font "Ricty Regular 12"
-
 
 #########################################################################
 ##### Install tex-related software #####

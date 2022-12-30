@@ -61,26 +61,6 @@ hook_add = '''
 repo = 'KohPoll/vim-less'
 
 [[plugins]]
-repo = 'Shougo/deoplete.nvim'
-on_event = 'InsertCharPre'
-
-hook_source = '''
-  let g:deoplete#enable_at_startup = 1
-  let g:deoplete#auto_complete_delay = 0
-  let g:deoplete#auto_complete_start_length = 1
-  let g:deoplete#enable_camel_case = 0
-  let g:deoplete#enable_ignore_case = 0
-  let g:deoplete#enable_refresh_always = 0
-  let g:deoplete#enable_smart_case = 1
-  let g:deoplete#file#enable_buffer_path = 1
-  let g:deoplete#max_list = 10000
-  inoremap <expr><tab> pumvisible() ? "\<C-n>" :
-    \ neosnippet#expandable_or_jumpable() ?
-    \    "\<Plug>(neosnippet_expand_or_jump)" : "\<tab>"
-'''
-on_i = 1
-
-[[plugins]]
 repo = 'roxma/nvim-yarp'
 if   = '''! has('nvim')'''
 
@@ -142,6 +122,28 @@ repo = 'ujihisa/unite-colorscheme'
 [[plugins]]
 repo = 'christoomey/vim-tmux-navigator'
 
+[[plugins]]
+repo = 'neoclide/coc.nvim'
+rev = 'release'
+build = '''
+  git checkout release
+'''
+hook_add = '''
+  inoremap <silent><expr> <TAB>
+        \ pumvisible() ? "\<C-n>" :
+        \ <SID>check_back_space() ? "\<TAB>" :
+        \ coc#refresh()
+  inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+  inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+  function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~# '\s'
+  endfunction
+  nmap <silent> gd <Plug>(coc-definition)
+  nmap <silent> gy <Plug>(coc-type-definition)
+  nmap <silent> gi <Plug>(coc-implementation)
+  nmap <silent> gr <Plug>(coc-references)
+'''
 
 # ブランチやタグを指定したいとき
 # [[plugins]]
@@ -153,4 +155,3 @@ repo = 'christoomey/vim-tmux-navigator'
 # repo = 'elzr/vim-json'
 # if   = '''! has('kaoriya')'''
 #
-

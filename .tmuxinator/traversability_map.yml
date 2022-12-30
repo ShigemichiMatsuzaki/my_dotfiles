@@ -1,0 +1,25 @@
+name: traversability_map
+root: ~/Documents/docker/traversability-map-docker/
+pre:
+    #- cd ~/dotfiles
+    #- git pull
+
+
+windows:
+    - Launch:
+        layout: tiled
+        panes:
+            - archey && roscore
+            -
+            - archey
+            -
+            - archey
+            - cd /media/shigemichi/HDD/bag/agri/20190712/
+    - Coding:
+        layout: main-horizontal
+        panes:
+            - vim:
+                - vim
+            - tig:
+                - cw
+                - ls -ltr --ignore='cmakelist*'
