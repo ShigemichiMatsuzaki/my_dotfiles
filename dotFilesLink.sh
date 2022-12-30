@@ -31,11 +31,11 @@ ln -snf ~/my_dotfiles/.latexmkrc ~/.latexmkrc
 ##### Install tmux-powerline #####
 ##################################
 # Install tmux
-sudo apt-get install aptitude
-sudo aptitude install tmux # NOTE: tmux should be version 1.8. Please check whether you have the right version. If not, downgrade it via apt.
+sudo apt install -y aptitude
+sudo aptitude install -y tmux # NOTE: tmux should be version 1.8. Please check whether you have the right version. If not, downgrade it via apt.
 
-sudo apt install gem ruby-dev build-essential gconf2
-sudo gem install rubygems-update
+sudo apt install -y gem ruby-dev build-essential gconf2
+sudo gem install -y rubygems-update
 sudo update_rubygems
 sudo gem install tmuxinator
 
@@ -45,9 +45,9 @@ git clone git@github.com:erikw/tmux-powerline.git ~/tmux-powerline
 # ##### Install Ricty font (http://www.rs.tus.ac.jp/yyusa/ricty.html) #####
 # #########################################################################
 # Install FontForge
-sudo add-apt-repository ppa:fontforge/fontforge
+# sudo add-apt-repository ppa:fontforge/fontforge
 sudo apt-get update
-sudo apt-get install fontforge
+sudo apt-get install -y fontforge
 
 # Get Google Fonts Inconsolata and M+ IPA synthesized font Migu 1M
 mkdir ~/.fonts
@@ -97,11 +97,12 @@ gconftool-2 --set --type string /apps/gnome-terminal/profiles/Default/font "Rict
 # Node.js
 # https://gist.github.com/budiantoip/fb4d04c80f4cf05f33deace08984e8eb
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-source ~/.bashrc
-nvm install --lts
+## TODO: fix this part so that `nvm install` is automatically executed 
+# bash ${HOME}/.nvm/nvm.sh
+# nvm install --lts
 
 # Latest version of Vim
-sudo apt purge vim
+sudo apt purge -y vim
 sudo add-apt-repository ppa:jonathonf/vim
 sudo apt update 
-sudo apt install vim
+sudo apt install -y vim
