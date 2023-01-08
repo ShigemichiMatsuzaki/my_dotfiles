@@ -11,6 +11,7 @@
 !.tmuxautorun
 !.ycm_extra_conf.py
 !dotFilesLink.sh
+!test_on_docker.sh
 
 # Folders
 !.vim/rc/*
