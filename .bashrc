@@ -236,3 +236,22 @@ alias nvitop="docker run -it --rm --runtime=nvidia --gpus=all --pid=host nvitop:
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Matsuzaki/My docker compose aliases
+function mdc () {
+  if [ "$1" == "b" ]; then
+    docker compose build $2
+  elif [ "$1" == "r" ]; then
+    docker compose run --rm $2
+  elif [ "$1" == "e" ]; then
+    docker exec -it $2 $3
+  else
+    echo "Usage: mdc [b|r|e] <args>"
+  fi
+}
+
+complete -F _docker_ip_setup_comp mdc
+
+# alias db="docker compose build $1"
+# alias dr="docker compose run --rm $1"
+# alias de="docker exec -it $1 $2"
