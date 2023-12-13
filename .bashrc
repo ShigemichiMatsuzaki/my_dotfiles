@@ -231,7 +231,18 @@ function pdfmin()
 export CXX=/usr/bin/clang++
 export C=/usr/bin/clang
 
-alias nvitop="docker run -it --rm --runtime=nvidia --gpus=all --pid=host nvitop:latest"
+# alias nvitop="docker run -it --rm --runtime=nvidia --gpus=all --pid=host nvitop:latest"
+function nvitop() {
+  IMAGES=`docker images | grep nvitop`
+  if [ "$IMAGES" == "" ]; then
+    echo "Image 'nvitop' is not found. Build it."
+    cd /tmp/ && git clone --depth=1 https://github.com/XuehaiPan/nvitop.git && cd nvitop  # clone this repo first
+    docker build --build-arg http_proxy=${http_proxy} --build-arg https_proxy=${https_proxy} --tag nvitop:latest .  # build the Docker image
+    cd -
+  fi
+
+  docker run -it --rm --runtime=nvidia --gpus=all --pid=host nvitop:latest  # run the Docker container
+}
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -240,7 +251,7 @@ export NVM_DIR="$HOME/.nvm"
 # Matsuzaki/My docker compose aliases
 function mdc () {
   if [ "$1" == "b" ]; then
-    docker compose build $2
+    docker compose build --build-arg http_proxy=${http_proxy} --build-arg https_proxy=${http_proxy} $2
   elif [ "$1" == "r" ]; then
     docker compose run --rm $2
   elif [ "$1" == "e" ]; then
@@ -251,6 +262,16 @@ function mdc () {
 }
 
 complete -F _docker_ip_setup_comp mdc
+
+function rm_submodule () {
+  if [ "$1" == "" ]; then
+    echo "Usage: rm_submodule <submodule_path>"
+  else
+    git submodule deinit -f $1
+    git rm -f $1
+    rm -rf .git/modules/$1
+  fi
+}
 
 # alias db="docker compose build $1"
 # alias dr="docker compose run --rm $1"
