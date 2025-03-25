@@ -103,18 +103,31 @@ install_vim()
   sudo apt install -y vim
 }
 
-install_cuda()
+install_nvidia_driver()
 {
-  # Uninstall already installed NVIDIA-driver and CUDA
-  sudo apt purge *cuda*
-
-  # Install
-  sudo apt -y update
-  sudo apt -y upgrade
-  sudo apt dist-upgrade
+  echo "Installing NVIDIA Driver..."
+  sudo apt update
+  sudo apt install -y ubuntu-drivers-common
   ubuntu-drivers devices
   sudo ubuntu-drivers autoinstall
   sudo update-initramfs -u
+  echo "NVIDIA Driver installation completed."
+}
+
+install_cuda()
+{
+  echo "Installing CUDA..."
+  sudo apt purge -y '*cuda*'
+  sudo apt update
+  sudo apt upgrade -y
+  distribution=$(. /etc/os-release; echo $ID$VERSION_ID)
+  wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-$distribution.pin
+  sudo mv cuda-$distribution.pin /etc/apt/preferences.d/cuda-repository-pin-600
+  sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/3bf863cc.pub
+  echo "deb https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64 /" | sudo tee /etc/apt/sources.list.d/cuda.list
+  sudo apt update
+  sudo apt install -y cuda
+  echo "CUDA installation completed."
 }
 
 install_docker()
@@ -139,6 +152,31 @@ install_docker()
   sudo apt-get install -y nvidia-docker2
   sudo systemctl restart docker
   sudo docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
+}
+
+install_docker_with_nvidia()
+{
+  echo "Installing Docker with NVIDIA Container Toolkit..."
+  sudo apt-get remove -y docker docker-engine docker.io containerd runc
+  sudo apt update
+  sudo apt install -y \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+  sudo mkdir -p /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  sudo apt update
+  sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+  distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+  curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+  curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+  sudo apt update
+  sudo apt install -y nvidia-container-toolkit
+  sudo systemctl restart docker
+  sudo docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
+  echo "Docker with NVIDIA Container Toolkit installation completed."
 }
 
 ################
@@ -213,7 +251,7 @@ while [ : ]; do
       ;;
     -d | --docker)
       echo "(Re-)Install Docker"
-      install_docker
+      install_docker_with_nvidia
       shift
       ;;
     --) shift; 
