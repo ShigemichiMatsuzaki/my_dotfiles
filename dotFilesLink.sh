@@ -121,6 +121,8 @@ install_cuda()
   sudo apt update
   sudo apt upgrade -y
   distribution=$(. /etc/os-release; echo $ID$VERSION_ID)
+  # Remove '.' in $distribution to match the URL
+  distribution=$(echo $distribution | sed 's/\.//g')
   wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-$distribution.pin
   sudo mv cuda-$distribution.pin /etc/apt/preferences.d/cuda-repository-pin-600
   sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/3bf863cc.pub
@@ -151,7 +153,7 @@ install_docker()
   sudo apt-get update
   sudo apt-get install -y nvidia-docker2
   sudo systemctl restart docker
-  sudo docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
+  sudo docker run --rm --gpus all nvidia/cuda:12.8.1-base-ubuntu22.04 nvidia-smi
 }
 
 install_docker_with_nvidia()
@@ -175,27 +177,29 @@ install_docker_with_nvidia()
   sudo apt update
   sudo apt install -y nvidia-container-toolkit
   sudo systemctl restart docker
-  sudo docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
+  sudo docker run --rm --gpus all nvidia/cuda:12.8.1-base-ubuntu22.04 nvidia-smi
   echo "Docker with NVIDIA Container Toolkit installation completed."
 }
 
 ################
 ##### MAIN #####
 ################
-sudo apt update
-sudo apt install -y \
-  curl \
-  git \
-  ca-certificates \
-  curl \
-  gnupg \
-  software-properties-common \
-  lsb-release
+common() {
+  sudo apt update
+  sudo apt install -y \
+    curl \
+    git \
+    ca-certificates \
+    curl \
+    gnupg \
+    software-properties-common \
+    lsb-release
+}
 
 #
 # Options
 #
-VALID_ARGS=$(getopt -o alr:vtfcd --long all,ln,ros:,vim,tmux,font,latex,cuda,docker -- "$@")
+VALID_ARGS=$(getopt -o alr:vtfcdh --long all,ln,ros:,vim,tmux,font,latex,cuda,docker,help -- "$@")
 if [[ $? -ne 0 ]]; then
     exit 1;
 fi
@@ -204,8 +208,23 @@ eval set -- "$VALID_ARGS"
 ROS_DEFAULT="desktop-full"
 while [ : ]; do
   case "$1" in
+     -h | --help)
+      echo "Usage: $0 [OPTION]"
+      echo "Options:"
+      echo "  -a, --all          Install everything"
+      echo "  -l, --ln           Make symlinks"
+      echo "  -r, --ros          Install ROS"
+      echo "  -v, --vim          Install Vim"
+      echo "  -t, --tmux         Install tmux"
+      echo "  --font             Install Ricty font"
+      echo "  --latex            Install LaTeX and related software"
+      echo "  -c, --cuda         Install CUDA"
+      echo "  -d, --docker       Install Docker"
+      exit 0
+      ;;
     -a | --all)
       echo "Install everything"
+      common
       make_symlinks
       install_tmux
       install_ros
@@ -221,6 +240,7 @@ while [ : ]; do
       shift
       ;;
     -r | --ros)
+      common
       if [ "$2" != "desktop-full" && "$2" != "desktop" && "$2" != "ros-base" && "$2" != "ros-core" ]; then
         ROS_VERSION="$ROS_DEFAULT"
         shift
@@ -231,26 +251,31 @@ while [ : ]; do
       install_ros "$ROS_VERSION"
       ;;
     -v | --vim)
+      common
       echo "(Re-)Install Vim"
       install_vim
       shift
       ;;
     -t | --tmux)
+      common
       echo "(Re-)Install tmux"
       install_tmux
       shift
       ;;
     --latex)
+      common
       echo "(Re-)Install LaTeX and related software"
       install_latex
       shift
       ;;
     -c | --cuda)
+      common
       echo "(Re-)Install CUDA"
       install_cuda
       shift
       ;;
     -d | --docker)
+      common
       echo "(Re-)Install Docker"
       install_docker_with_nvidia
       shift

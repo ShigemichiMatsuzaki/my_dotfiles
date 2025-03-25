@@ -241,7 +241,7 @@ function nvitop() {
     cd -
   fi
 
-  docker run -it --rm --runtime=nvidia --gpus=all --pid=host nvitop:latest  # run the Docker container
+  docker run -it --rm --gpus=all --pid=host nvitop:latest  # run the Docker container
 }
 
 export NVM_DIR="$HOME/.nvm"
