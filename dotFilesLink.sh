@@ -212,6 +212,7 @@ while [ : ]; do
       install_vim
       install_tmux
       install_latex
+      install_docker_with_nvidia
       shift 2
       ;;
     -l | --ln)
