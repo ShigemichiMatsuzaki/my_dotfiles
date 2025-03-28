@@ -276,3 +276,6 @@ function rm_submodule () {
 # alias db="docker compose build $1"
 # alias dr="docker compose run --rm $1"
 # alias de="docker exec -it $1 $2"
+#
+alias df="df -h"
+alias du="du --max-depth=1 -h $1"

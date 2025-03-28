@@ -181,6 +181,22 @@ install_docker_with_nvidia()
   echo "Docker with NVIDIA Container Toolkit installation completed."
 }
 
+install_chrome()
+{
+  wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+  sudo apt install -y ./google-chrome-stable_current_amd64.deb
+}
+
+install_vscode()
+{
+  sudo apt update
+  sudo apt install -y software-properties-common apt-transport-https wget
+  wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+  sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
+  sudo apt update
+  sudo apt install -y code
+}
+
 ################
 ##### MAIN #####
 ################
@@ -188,18 +204,20 @@ common() {
   sudo apt update
   sudo apt install -y \
     curl \
+    wget \
     git \
     ca-certificates \
-    curl \
     gnupg \
     software-properties-common \
-    lsb-release
+    lsb-release \
+    htop \
+    net-tools 
 }
 
 #
 # Options
 #
-VALID_ARGS=$(getopt -o alr:vtfcdh --long all,ln,ros:,vim,tmux,font,latex,cuda,docker,help -- "$@")
+VALID_ARGS=$(getopt -o alr:vtfcdh --long all,ln,ros:,vim,tmux,font,latex,cuda,docker,code,chrome,help -- "$@")
 if [[ $? -ne 0 ]]; then
     exit 1;
 fi
@@ -232,7 +250,21 @@ while [ : ]; do
       install_tmux
       install_latex
       install_docker_with_nvidia
+      install_chrome
+      install_vscode
       shift 2
+      ;;
+    --chrome)
+      common
+      echo "Install Google Chrome"
+      install_chrome
+      shift
+      ;;
+    --code)
+      common
+      echo "Install Visual Studio Code"
+      install_vscode
+      shift
       ;;
     -l | --ln)
       echo "Make symlinks"
